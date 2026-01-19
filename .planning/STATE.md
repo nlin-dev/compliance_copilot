@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-19)
 ## Current Position
 
 Phase: 2 of 6 (Ingestion)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-19 — Completed 02-02-PLAN.md (TDD)
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-19 — Completed 02-03-PLAN.md (Phase 2 complete)
 
-Progress: ██████░░░░ ~45%
+Progress: ███████░░░ ~50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 2.5 min
-- Total execution time: 20.5 min
+- Total execution time: 22.5 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1-Foundation | 6/6 | 14 min | 2 min |
-| 2-Ingestion | 2/3 | 6.5 min | 3 min |
+| 2-Ingestion | 3/3 | 8.5 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (2 min), 01-05 (1 min), 01-06 (2 min), 02-01 (4 min), 02-02 (2.5 min)
+- Last 5 plans: 01-05 (1 min), 01-06 (2 min), 02-01 (4 min), 02-02 (2.5 min), 02-03 (2 min)
 - Trend: —
 
 ## Accumulated Context
@@ -49,6 +49,7 @@ Recent decisions affecting current work:
 - 01-06: Zod schemas with inferred types, health check reports env var status
 - 02-01: pdf-parse v2.4.5 class API (PDFParse), cache to ./data/cms-manual.pdf
 - 02-02: 800 char chunks, 200 overlap, sentence-boundary splits, Vitest for testing
+- 02-03: text-embedding-3-small, batch 100, retry with backoff, `npm run ingest`
 
 ### Deferred Issues
 
@@ -61,5 +62,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 02-02-PLAN.md (TDD)
+Stopped at: Completed 02-03-PLAN.md (Phase 2 complete)
 Resume file: None
