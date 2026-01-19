@@ -14,7 +14,7 @@ None
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation** - Next.js 14 setup with security, rate limiting, and service clients
+- [x] **Phase 1: Foundation** - Next.js 14 setup with security, rate limiting, and service clients
 - [ ] **Phase 2: Ingestion** - PDF processing and vector embedding pipeline
 - [ ] **Phase 3: Query API** - RAG-based Q&A with streaming and caching
 - [ ] **Phase 4: Compliance API** - Visit note compliance checking with structured output
@@ -71,7 +71,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 5/6 | In progress | - |
+| 1. Foundation | 6/6 | Complete | 2026-01-19 |
 | 2. Ingestion | 0/TBD | Not started | - |
 | 3. Query API | 0/TBD | Not started | - |
 | 4. Compliance API | 0/TBD | Not started | - |
