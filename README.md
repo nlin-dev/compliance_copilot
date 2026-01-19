@@ -1,187 +1,233 @@
 # Compliance Copilot
 
-An LLM-powered CMS Medicare home health compliance assistant that answers questions about CMS guidelines with source citations and checks visit notes for compliance issues.
+An LLM-powered RAG system for CMS Medicare home health compliance. Answers questions about CMS guidelines with citations and checks visit notes against regulatory requirements.
 
-## Features
+## Important Limitations
 
-- **Q&A Chat** - Ask questions about CMS Medicare home health guidelines and get answers with source citations
-- **Compliance Checker** - Paste visit notes and get automated compliance checking against CMS requirements
-- **Source Citations** - Every answer includes specific CMS section references
-- **Dark Mode** - Full light/dark theme support
+**Not production-ready. Educational and demonstration purposes only.**
 
-## Tech Stack
+- **Not HIPAA compliant** - Do not use with real patient data
+- **No PHI/PII protection** - All data flows through third-party LLM APIs
+- **Requires your own infrastructure** - OpenAI API key, Pinecone index (1536 dimensions, cosine metric), and PostgreSQL database
+- **Uses synthetic data** - Sample visit notes are fabricated for demonstration
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript (strict mode)
-- **LLM**: OpenAI gpt-4o-mini
-- **Embeddings**: OpenAI text-embedding-3-small
-- **Vector Database**: Pinecone
-- **Cache/Rate Limiting**: Upstash Redis
-- **Database**: PostgreSQL with Prisma ORM
-- **UI Components**: shadcn/ui + Tailwind CSS
-
-## Prerequisites
-
-- Node.js 18+
-- npm or yarn
-- API accounts for:
-  - [OpenAI](https://platform.openai.com/api-keys) - For LLM and embeddings
-  - [Pinecone](https://app.pinecone.io/) - Create a Starter (free) index with 1536 dimensions and cosine metric
-  - [Upstash](https://console.upstash.com/) - Create a free Redis database
-  - PostgreSQL database - [Vercel Postgres](https://vercel.com/storage/postgres), local install, or Docker
-
-## Getting Started
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd compliance-copilot
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` and fill in your API keys and database URL.
-
-4. **Set up the database**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
-
-5. **Run the ingestion script** (downloads and processes the CMS manual)
-   ```bash
-   npm run ingest
-   ```
-   This will download the CMS Medicare Benefit Policy Manual Chapter 7, chunk it, generate embeddings, and store them in Pinecone. Takes 2-5 minutes.
-
-6. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-7. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `OPENAI_API_KEY` | OpenAI API key for LLM and embeddings | Yes |
-| `PINECONE_API_KEY` | Pinecone API key | Yes |
-| `PINECONE_INDEX` | Pinecone index name (e.g., `compliance-copilot`) | Yes |
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL | Yes |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token | Yes |
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
-| `NEXT_PUBLIC_APP_URL` | Application URL (e.g., `http://localhost:3000`) | Yes |
-
-See `.env.example` for the full list of optional configuration variables.
-
-## Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run test` | Run tests in watch mode |
-| `npm run test:run` | Run tests once |
-| `npm run ingest` | Download CMS manual and populate vector database |
-| `npm run lint` | Run ESLint |
+To ingest real CMS documents, see [Document Ingestion](#document-ingestion) below.
 
 ## Architecture
 
+RAG pipeline with offline ingestion and runtime retrieval:
+
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        OFFLINE INGESTION                        │
-│  CMS PDF → Text Extraction → Chunking → Embeddings → Pinecone   │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                         RUNTIME QUERY                           │
-│  User Question → Embed → Retrieve from Pinecone → LLM → Answer  │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                      COMPLIANCE CHECK                           │
-│  Visit Note → Extract Claims → Retrieve Requirements → Judge    │
-└─────────────────────────────────────────────────────────────────┘
+OFFLINE: CMS PDF → Text Extraction → Chunking → Embeddings → Pinecone
+RUNTIME: Query → Embed → Vector Search → Context → LLM → Streaming Response
+COMPLIANCE: Visit Note → Claim Extraction → Requirement Retrieval → Judgment
 ```
 
-**Key Design Decision**: Ingestion runs offline via `npm run ingest` to avoid Vercel's 10-second function timeout. Runtime queries complete in 2-4 seconds.
+**Critical Design Decision**: Ingestion runs offline (`npm run ingest`) to avoid serverless function timeouts. Runtime queries complete in 2-4 seconds via streaming SSE.
+
+**Data Flow**:
+
+1. PDF documents chunked with 200-token overlap to preserve context across boundaries
+2. Each chunk embedded with `text-embedding-3-small` (1536 dimensions)
+3. User queries embedded identically, top-k similarity search retrieves relevant chunks
+4. Retrieved chunks injected into LLM context with source metadata for attribution
+
+## Tech Stack
+
+- **Runtime**: Next.js 14 App Router, TypeScript strict mode, Node.js 18+
+- **LLM**: OpenAI `gpt-4o-mini` for generation
+- **Embeddings**: OpenAI `text-embedding-3-small` (1536d)
+- **Vector Store**: Pinecone (cosine similarity)
+- **Cache/Rate Limiting**: Upstash Redis
+- **Database**: PostgreSQL + Prisma ORM
+- **UI**: shadcn/ui, Tailwind CSS
+
+## Prerequisites
+
+Required infrastructure:
+
+- **OpenAI API key** - LLM and embeddings
+- **Pinecone index** - 1536 dimensions, cosine metric (free Starter plan sufficient)
+- **Upstash Redis** - Rate limiting and caching (free tier sufficient)
+- **PostgreSQL** - Vercel Postgres, local, or Docker
+
+## Quick Start
+
+```bash
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys and database URL
+
+# Setup database
+npx prisma generate && npx prisma db push
+
+# Ingest CMS documents (takes 2-5 minutes)
+npm run ingest
+
+# Run development server
+npm run dev
+```
+
+**First-time setup requires running ingestion before the app is functional.** The vector database starts empty.
+
+## Environment Variables
+
+Core configuration (all required):
+
+| Variable                   | Description                                                      |
+| -------------------------- | ---------------------------------------------------------------- |
+| `OPENAI_API_KEY`           | OpenAI API key for LLM and embeddings                            |
+| `PINECONE_API_KEY`         | Pinecone API key                                                 |
+| `PINECONE_INDEX`           | Pinecone index name (create with 1536 dimensions, cosine metric) |
+| `UPSTASH_REDIS_REST_URL`   | Upstash Redis REST URL                                           |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token                                         |
+| `DATABASE_URL`             | PostgreSQL connection string                                     |
+| `NEXT_PUBLIC_APP_URL`      | Application URL for client-side routing                          |
+
+See [.env.example](.env.example) for optional configuration (rate limits, embedding batch size, etc.).
+
+## Document Ingestion
+
+The ingestion pipeline processes regulatory documents and populates the vector database. By default, it downloads CMS Medicare Benefit Policy Manual Chapter 7.
+
+**How ingestion works**:
+
+1. Downloads PDF from configured source URL
+2. Extracts text and splits into chunks (1000 tokens, 200 token overlap)
+3. Generates embeddings for each chunk via OpenAI
+4. Uploads vectors to Pinecone with metadata (page numbers, section references)
+5. Stores document metadata in PostgreSQL
+
+**Run ingestion**:
+
+```bash
+npm run ingest
+```
+
+**Ingest your own documents**:
+
+Edit [scripts/ingest/index.ts](scripts/ingest/index.ts) to point to your PDF URL:
+
+```typescript
+const DOCUMENT_SOURCE = {
+  url: "https://your-cms-document.pdf",
+  name: "Your Document Name",
+  type: "cms_manual",
+};
+```
+
+Or add new documents programmatically via `scripts/ingest/embed.ts` functions:
+
+- `downloadAndProcessPdf(url, metadata)` - Download, chunk, and embed a PDF
+- `chunkText(text, options)` - Split text into overlapping chunks
+- `generateEmbeddings(chunks)` - Batch embed chunks
+- `upsertToVectorStore(vectors, metadata)` - Upload to Pinecone
+
+**Chunking strategy**: 1000 tokens with 200 token overlap prevents information loss at boundaries. Tune `CHUNK_SIZE` and `CHUNK_OVERLAP` in [scripts/ingest/embed.ts](scripts/ingest/embed.ts) based on your document structure.
 
 ## API Endpoints
 
 ### POST /api/query
 
-Ask a question about CMS guidelines.
+RAG-based Q&A over CMS guidelines. Returns streaming SSE response.
 
-**Request:**
-```json
-{
-  "question": "What are the homebound status requirements?"
-}
+```bash
+curl -X POST http://localhost:3000/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What are homebound status requirements?"}'
 ```
 
-**Response:** Server-Sent Events stream with answer chunks, followed by source citations.
+**Response**: SSE stream with answer chunks + source citations with page/section metadata.
 
 ### POST /api/compliance
 
-Check a visit note for compliance issues.
+Compliance check for visit notes. Extracts claims, retrieves requirements, judges against regulations.
 
-**Request:**
-```json
-{
-  "visitNote": "Patient visit documentation text..."
-}
+```bash
+curl -X POST http://localhost:3000/api/compliance \
+  -H "Content-Type: application/json" \
+  -d '{"visitNote": "Patient exhibits limited mobility..."}'
 ```
 
-**Response:**
-```json
+**Response**:
+
+```typescript
 {
-  "status": "PASS" | "FAIL" | "NEEDS_REVIEW",
-  "findings": [
-    {
-      "category": "homebound_status",
-      "status": "PASS" | "FAIL" | "NEEDS_REVIEW",
-      "finding": "Description of finding",
-      "recommendation": "Suggested action if applicable",
-      "sources": [{ "page": 1, "section": "10.1", "text": "..." }]
-    }
-  ]
+  status: "PASS" | "FAIL" | "NEEDS_REVIEW",
+  findings: Array<{
+    category: string,
+    status: "PASS" | "FAIL" | "NEEDS_REVIEW",
+    finding: string,
+    recommendation?: string,
+    sources: Array<{ page: number, section: string, text: string }>
+  }>
 }
 ```
 
 ### GET /api/health
 
-Health check endpoint that reports service connectivity status.
+Service health check. Reports connectivity to OpenAI, Pinecone, Redis, PostgreSQL.
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── query/route.ts        # RAG Q&A endpoint (SSE streaming)
+│   │   ├── compliance/route.ts   # Visit note compliance checker
+│   │   └── health/route.ts       # Health check
+│   ├── ask/page.tsx              # Q&A chat interface
+│   └── compliance/page.tsx       # Compliance checker UI
+├── lib/
+│   ├── retrieval/
+│   │   ├── embed.ts              # Embedding generation
+│   │   └── query.ts              # Vector search + LLM orchestration
+│   └── compliance/
+│       └── judge.ts              # Compliance judgment logic
+├── components/
+│   ├── chat/                     # Chat UI components
+│   └── compliance/               # Compliance UI components
+scripts/
+└── ingest/
+    ├── index.ts                  # Ingestion entry point
+    └── embed.ts                  # PDF processing, chunking, embedding
+```
+
+**Key modules**:
+
+- [src/lib/retrieval/query.ts](src/lib/retrieval/query.ts) - Core RAG logic, vector search + LLM prompt construction
+- [scripts/ingest/embed.ts](scripts/ingest/embed.ts) - Document processing pipeline
+- [src/app/api/compliance/route.ts](src/app/api/compliance/route.ts) - Multi-stage compliance checking (claim extraction → requirement retrieval → judgment)
+
+## Development
+
+**Testing**:
+
+```bash
+npm run test        # Watch mode
+npm run test:run    # Single run
+```
+
+Tests follow TDD principles. See [CLAUDE.md](CLAUDE.md) for development guidelines.
+
+**Linting**:
+
+```bash
+npm run lint
+```
 
 ## Deployment
 
-### Vercel (Recommended)
+**Vercel** (recommended for Next.js):
 
-1. Push your code to GitHub
-2. Import the repository in [Vercel](https://vercel.com)
-3. Add all environment variables from `.env.example`
-4. Deploy
+1. Connect GitHub repository to Vercel
+2. Configure environment variables
+3. Deploy
 
-**Important**: Run `npm run ingest` locally before deploying to populate the vector database.
+**Critical**: Run `npm run ingest` locally before first deploy to populate vector database. Ingestion cannot run in serverless functions due to execution time limits.
 
-### Manual Deployment
-
-The application can be deployed to any platform that supports Node.js 18+:
-
-```bash
-npm run build
-npm run start
-```
-
-Ensure all environment variables are set and the database is accessible.
+**Alternative platforms**: Any Node.js 18+ host with build command `npm run build` and start command `npm run start`.
 
 ## License
 

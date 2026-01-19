@@ -11,6 +11,23 @@ import { analyzeCompliance } from '@/lib/compliance/analyze'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+// CORS headers for API responses
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+/**
+ * OPTIONS /api/compliance - Handle CORS preflight
+ */
+export function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders,
+  })
+}
+
 /**
  * POST /api/compliance - Check visit note compliance against CMS requirements
  */
@@ -28,7 +45,7 @@ export async function POST(request: Request): Promise<Response> {
     if (!parseResult.success) {
       return NextResponse.json(
         { error: 'Invalid request', details: parseResult.error.flatten() },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
 
@@ -72,6 +89,7 @@ export async function POST(request: Request): Promise<Response> {
       {
         status: 200,
         headers: {
+          ...corsHeaders,
           'X-Response-Time': `${processingTime}ms`,
         },
       }
@@ -107,6 +125,7 @@ export async function POST(request: Request): Promise<Response> {
       {
         status: 500,
         headers: {
+          ...corsHeaders,
           'X-Response-Time': `${processingTime}ms`,
         },
       }

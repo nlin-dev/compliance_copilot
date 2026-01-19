@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { ComplianceForm } from '@/components/compliance/compliance-form'
 import { FindingsDisplay } from '@/components/compliance/findings-display'
 import { FindingsSkeleton } from '@/components/compliance/findings-skeleton'
-import { AlertCircle, ArrowLeft } from 'lucide-react'
+import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr'
 
 export function ComplianceChecker() {
   const { result, isLoading, error, checkCompliance, reset } =
@@ -19,7 +19,7 @@ export function ComplianceChecker() {
           <ComplianceForm onSubmit={checkCompliance} isLoading={isLoading} />
           {error && (
             <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+              <Warning weight="bold" className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -27,8 +27,8 @@ export function ComplianceChecker() {
         </>
       ) : (
         <>
-          <Button variant="ghost" onClick={reset} className="gap-1">
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="ghost" onClick={reset} className="gap-2 text-xs">
+            <ArrowLeft weight="bold" className="h-3.5 w-3.5" />
             Check Another Note
           </Button>
           <FindingsDisplay result={result} />

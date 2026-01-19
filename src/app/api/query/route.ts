@@ -15,6 +15,35 @@ export const dynamic = 'force-dynamic'
 // Delimiter used to separate answer text from sources JSON in the stream
 const SOURCES_MARKER = '\n__SOURCES__\n'
 
+function streamTextWithSources(answer: string, sources: QuerySource[]): ReadableStream<Uint8Array> {
+  return new ReadableStream({
+    start(controller) {
+      const encoder = new TextEncoder()
+      controller.enqueue(encoder.encode(answer))
+      controller.enqueue(encoder.encode(SOURCES_MARKER))
+      controller.enqueue(encoder.encode(JSON.stringify(sources)))
+      controller.close()
+    },
+  })
+}
+
+// CORS headers for API responses
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+/**
+ * OPTIONS /api/query - Handle CORS preflight
+ */
+export function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders,
+  })
+}
+
 /**
  * POST /api/query - Query the CMS compliance knowledge base
  */
@@ -31,7 +60,7 @@ export async function POST(request: Request): Promise<Response> {
     if (!parseResult.success) {
       return NextResponse.json(
         { error: 'Invalid request', details: parseResult.error.flatten() },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
 
@@ -64,6 +93,7 @@ export async function POST(request: Request): Promise<Response> {
         {
           status: 429,
           headers: {
+            ...corsHeaders,
             'X-RateLimit-Limit': rateLimitResult.limit.toString(),
             'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
             'X-RateLimit-Reset': rateLimitResult.reset.toString(),
@@ -86,16 +116,17 @@ export async function POST(request: Request): Promise<Response> {
         responseTime: Date.now() - startTime,
       })
 
-      return NextResponse.json(
-        { ...cached, cached: true },
-        {
-          status: 200,
-          headers: {
-            'X-Response-Time': `${Date.now() - startTime}ms`,
-            'X-Cache': 'HIT',
-          },
-        }
-      )
+      const stream = streamTextWithSources(cached.answer, cached.sources)
+
+      return new Response(stream, {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-Response-Time': `${Date.now() - startTime}ms`,
+          'X-Cache': 'HIT',
+        },
+      })
     }
 
     // Embed the query
@@ -113,19 +144,24 @@ export async function POST(request: Request): Promise<Response> {
         userAgent: headersList.get('user-agent'),
         queryText,
         chunksUsed: 0,
-        responseCode: 404,
+        responseCode: 200,
         responseTime: Date.now() - startTime,
       })
 
-      return NextResponse.json(
-        { error: 'No relevant information found for your query' },
-        {
-          status: 404,
-          headers: {
-            'X-Response-Time': `${Date.now() - startTime}ms`,
-          },
-        }
+      const stream = streamTextWithSources(
+        "I couldn't find relevant information for your query in the indexed CMS content. Try rephrasing your question or ingesting additional documents.",
+        []
       )
+
+      return new Response(stream, {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-Response-Time': `${Date.now() - startTime}ms`,
+          'X-No-Results': '1',
+        },
+      })
     }
 
     // Convert chunks to sources for response
@@ -197,6 +233,7 @@ export async function POST(request: Request): Promise<Response> {
     return new Response(stream, {
       status: 200,
       headers: {
+        ...corsHeaders,
         'Content-Type': 'text/plain; charset=utf-8',
         'X-Response-Time': `${Date.now() - startTime}ms`,
         'X-Cache': 'MISS',
@@ -230,6 +267,7 @@ export async function POST(request: Request): Promise<Response> {
       {
         status: 500,
         headers: {
+          ...corsHeaders,
           'X-Response-Time': `${Date.now() - startTime}ms`,
         },
       }

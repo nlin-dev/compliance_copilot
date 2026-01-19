@@ -6,6 +6,7 @@ export interface ChunkWithEmbedding extends Chunk {
 }
 
 const EMBEDDING_MODEL = 'text-embedding-3-small'
+const EMBEDDING_DIMENSIONS = 512 // Match Pinecone index dimension
 const BATCH_SIZE = 100
 const MAX_RETRIES = 3
 const INITIAL_DELAY_MS = 1000
@@ -29,6 +30,7 @@ async function embedBatchWithRetry(texts: string[]): Promise<number[][]> {
         model: EMBEDDING_MODEL,
         input: texts,
         encoding_format: 'float',
+        dimensions: EMBEDDING_DIMENSIONS,
       })
 
       return response.data.map((item) => item.embedding)
@@ -51,7 +53,7 @@ async function embedBatchWithRetry(texts: string[]): Promise<number[][]> {
 /**
  * Embeds chunks in batches using OpenAI text-embedding-3-small.
  * @param chunks Array of Chunk objects to embed
- * @returns Chunks with embeddings attached (1536 dimensions each)
+ * @returns Chunks with embeddings attached (512 dimensions each)
  */
 export async function embedChunks(
   chunks: Chunk[]
@@ -122,9 +124,9 @@ if (require.main === module) {
       }
 
       // Verify dimensions
-      const allCorrect = results.every((r) => r.embedding.length === 1536)
+      const allCorrect = results.every((r) => r.embedding.length === 512)
       console.log(
-        `\n[embed] All embeddings 1536 dimensions: ${allCorrect ? 'YES' : 'NO'}`
+        `\n[embed] All embeddings 512 dimensions: ${allCorrect ? 'YES' : 'NO'}`
       )
     })
     .catch((error) => {

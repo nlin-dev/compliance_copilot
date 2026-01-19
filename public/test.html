@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JS Test</title>
+</head>
+<body>
+    <h1>JavaScript Test Page</h1>
+    <textarea id="test" placeholder="Type here"></textarea>
+    <p>Character count: <span id="count">0</span></p>
+
+    <script>
+        const textarea = document.getElementById('test');
+        const count = document.getElementById('count');
+
+        textarea.addEventListener('input', (e) => {
+            count.textContent = e.target.value.length;
+        });
+
+        console.log('JavaScript is working!');
+    </script>
+</body>
+</html>

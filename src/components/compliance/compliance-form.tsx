@@ -3,8 +3,7 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2 } from 'lucide-react'
+import { CircleNotch } from '@phosphor-icons/react/dist/ssr'
 import { ExampleSelector } from './example-selector'
 
 const MIN_CHARS = 50
@@ -31,56 +30,86 @@ export function ComplianceForm({ onSubmit, isLoading }: ComplianceFormProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Check Visit Note Compliance</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">
-              Try an example or paste your own note
-            </p>
-            <ExampleSelector onSelect={setVisitNote} disabled={isLoading} />
-          </div>
-          <div>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-heading font-serif">Documentation Audit</h1>
+        <p className="text-sm text-muted-foreground">
+          Validate visit notes against CMS coverage requirements
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-xs text-muted-foreground uppercase tracking-wide">
+            Sample Documentation
+          </label>
+          <ExampleSelector onSelect={setVisitNote} disabled={isLoading} />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-xs text-muted-foreground uppercase tracking-wide">
+            Visit Documentation
+          </label>
+          <div className="relative">
             <Textarea
               value={visitNote}
               onChange={(e) => setVisitNote(e.target.value)}
-              placeholder="Paste the visit note here to check for CMS Medicare compliance..."
-              className="min-h-[200px] resize-y"
+              placeholder="Paste visit note, assessment, or care documentation..."
+              className="min-h-[240px] resize-y text-sm border-border focus:border-primary transition-colors"
               disabled={isLoading}
             />
-            <div className="mt-1 flex justify-between text-xs">
-              <span className="text-muted-foreground">
-                {isUnderMin && (
-                  <span className="text-destructive">
-                    Minimum {MIN_CHARS} characters required
-                  </span>
-                )}
-                {isOverMax && (
-                  <span className="text-destructive">
-                    Maximum {MAX_CHARS} characters exceeded
-                  </span>
-                )}
-              </span>
-              <span
-                className={
-                  isUnderMin || isOverMax
-                    ? 'text-destructive'
-                    : 'text-muted-foreground'
-                }
-              >
-                {charCount.toLocaleString()}/{MAX_CHARS.toLocaleString()}
-              </span>
-            </div>
+            {isLoading && (
+              <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <CircleNotch weight="bold" className="h-4 w-4 animate-spin" />
+                  Analyzing documentation...
+                </div>
+              </div>
+            )}
           </div>
-          <Button type="submit" disabled={!isValid || isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLoading ? 'Analyzing...' : 'Check Compliance'}
+          <div className="flex justify-between text-xs">
+            <span className={cn(
+              "text-muted-foreground",
+              (isUnderMin || isOverMax) && "text-destructive"
+            )}>
+              {isUnderMin && `Minimum ${MIN_CHARS} characters required`}
+              {isOverMax && `Maximum ${MAX_CHARS} characters exceeded`}
+            </span>
+            <span className={cn(
+              "font-mono",
+              (isUnderMin || isOverMax) ? "text-destructive" : "text-muted-foreground"
+            )}>
+              {charCount.toLocaleString()}/{MAX_CHARS.toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <Button
+            type="submit"
+            disabled={!isValid || isLoading}
+            className="w-full h-10 text-sm"
+          >
+            {isLoading ? (
+              <>
+                <CircleNotch weight="bold" className="mr-2 h-4 w-4 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              'Run Compliance Audit'
+            )}
           </Button>
-        </form>
-      </CardContent>
-    </Card>
+          <div className="border border-border p-3">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <span className="font-medium text-foreground">Analysis scope:</span> Homebound status · Skilled need · Plan of care · Face-to-face · Documentation requirements
+            </p>
+          </div>
+        </div>
+      </form>
+    </div>
   )
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ')
 }

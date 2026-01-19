@@ -6,7 +6,7 @@ const nextConfig = {
     // CSP directives
     const cspDirectives = [
       "default-src 'self'",
-      `script-src 'self'${isDev ? " 'unsafe-eval'" : ''}`,
+      `script-src 'self'${isDev ? " 'unsafe-eval' 'unsafe-inline'" : ''}`, // Next.js requires unsafe-inline for hydration
       "style-src 'self' 'unsafe-inline'", // Required for Tailwind/shadcn
       "img-src 'self' blob: data:",
       "font-src 'self'",

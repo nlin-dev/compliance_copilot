@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { downloadPdf } from './download'
 import { extractPages } from './extract'
 import { chunkPages } from './chunk'
