@@ -12,6 +12,9 @@ import { getCachedResponse, cacheResponse } from '@/lib/retrieval/cache'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+// Delimiter used to separate answer text from sources JSON in the stream
+const SOURCES_MARKER = '\n__SOURCES__\n'
+
 /**
  * POST /api/query - Query the CMS compliance knowledge base
  */
@@ -146,6 +149,10 @@ export async function POST(request: Request): Promise<Response> {
             fullAnswer += chunk
             controller.enqueue(encoder.encode(chunk))
           }
+
+          // Append sources marker and JSON after all content chunks
+          controller.enqueue(encoder.encode(SOURCES_MARKER))
+          controller.enqueue(encoder.encode(JSON.stringify(sources)))
           controller.close()
 
           // Cache the complete response in the background
