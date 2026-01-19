@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-01-19)
 
 **Core value:** Accurate RAG-based Q&A and compliance checking against CMS home health guidelines — every answer must cite specific CMS sections, and every compliance finding must reference the exact requirement it's checking against.
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 2 — Ingestion
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation)
-Plan: 6 of 6 in current phase
-Status: Phase complete
-Last activity: 2026-01-19 — Completed 01-06-PLAN.md
+Phase: 2 of 6 (Ingestion)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-19 — Completed 02-01-PLAN.md
 
-Progress: █████░░░░░ ~30%
+Progress: ██████░░░░ ~40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 2 min
-- Total execution time: 14 min
+- Total plans completed: 7
+- Average duration: 2.5 min
+- Total execution time: 18 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1-Foundation | 6/6 | 14 min | 2 min |
+| 2-Ingestion | 1/3 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (2 min), 01-03 (2 min), 01-04 (2 min), 01-05 (1 min), 01-06 (2 min)
-- Trend: —
+- Last 5 plans: 01-03 (2 min), 01-04 (2 min), 01-05 (1 min), 01-06 (2 min), 02-01 (4 min)
+- Trend: ↑
 
 ## Accumulated Context
 
@@ -46,6 +47,7 @@ Recent decisions affecting current work:
 - 01-04: Prisma 7 config pattern (URL in prisma.config.ts), AuditLog model for API tracking
 - 01-05: Sliding window rate limiting, fail-open if Redis unavailable
 - 01-06: Zod schemas with inferred types, health check reports env var status
+- 02-01: pdf-parse v2.4.5 class API (PDFParse), cache to ./data/cms-manual.pdf
 
 ### Deferred Issues
 
@@ -58,5 +60,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 01-06-PLAN.md (Phase 1 complete)
+Stopped at: Completed 02-01-PLAN.md
 Resume file: None
