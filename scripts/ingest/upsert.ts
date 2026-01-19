@@ -6,6 +6,7 @@ export interface ChunkMetadata {
   pageNumber: number
   section: string
   subsection: string
+  [key: string]: string | number
 }
 
 const BATCH_SIZE = 100
