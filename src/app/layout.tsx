@@ -16,8 +16,43 @@ const geistMono = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'CMS Compliance Assistant',
-  description: 'AI-powered Medicare compliance assistance',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'https://cms-compliance-assistant.vercel.app'
+  ),
+  title: {
+    default: 'CMS Compliance Assistant',
+    template: '%s | CMS Compliance Assistant',
+  },
+  description:
+    'AI-powered Medicare compliance assistance. Check visit notes for CMS requirements and ask questions about Medicare regulations.',
+  keywords: [
+    'Medicare',
+    'CMS',
+    'compliance',
+    'home health',
+    'visit notes',
+    'healthcare',
+    'AI assistant',
+    'documentation',
+  ],
+  openGraph: {
+    title: 'CMS Compliance Assistant',
+    description:
+      'AI-powered Medicare compliance assistance. Check visit notes for CMS requirements and ask questions about Medicare regulations.',
+    type: 'website',
+    siteName: 'CMS Compliance Assistant',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CMS Compliance Assistant',
+    description:
+      'AI-powered Medicare compliance assistance. Check visit notes for CMS requirements and ask questions about Medicare regulations.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({
