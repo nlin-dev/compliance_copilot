@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-19)
 ## Current Position
 
 Phase: 6 of 6 (Polish)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-19 — Completed 06-02-PLAN.md
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-19 — Completed 06-03-PLAN.md
 
-Progress: █████████████████░ ~97%
+Progress: ██████████████████ 100%
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Recent decisions affecting current work:
 - 05-03: Sample notes from existing JSON, skeleton mirrors FindingsDisplay structure
 - 06-01: Message skeleton mimics chat bubble layout, compliance page refactored to server component for metadata export
 - 06-02: README with 11 sections for practical onboarding, Vercel config with iad1 region, 10s maxDuration for Hobby tier
+- 06-03: Route /chat renamed to /ask, Performance 76 accepted for dev mode
 
 ### Deferred Issues
 
@@ -74,5 +75,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 06-02-PLAN.md
+Stopped at: Completed 06-03-PLAN.md - Milestone complete
 Resume file: None
