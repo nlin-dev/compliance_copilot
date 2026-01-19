@@ -26,7 +26,7 @@ const JudgmentSchema = z.object({
   explanation: z.string().describe('Why this finding passed, failed, or needs review'),
 })
 
-type Judgment = z.infer<typeof JudgmentSchema>
+type _Judgment = z.infer<typeof JudgmentSchema>
 
 /**
  * System prompt for compliance judgment.

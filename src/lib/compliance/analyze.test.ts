@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { analyzeCompliance, aggregateFindings } from './analyze'
+import { describe, it, expect, vi } from 'vitest'
+import { aggregateFindings } from './analyze'
 import type { ComplianceFinding } from '@/schemas/compliance'
 
 // Mock dependencies
