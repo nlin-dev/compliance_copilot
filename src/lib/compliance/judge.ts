@@ -22,7 +22,7 @@ const JudgmentSchema = z.object({
     'PASS: Clear evidence satisfies requirement. FAIL: Evidence contradicts or requirement not met. NEEDS_REVIEW: Insufficient information or ambiguous.'
   ),
   requirement: z.string().describe('The specific CMS requirement being checked'),
-  evidence: z.string().optional().describe('Quote from the note supporting the finding'),
+  evidence: z.string().nullable().describe('Quote from the note supporting the finding, or null if no evidence'),
   explanation: z.string().describe('Why this finding passed, failed, or needs review'),
 })
 
@@ -122,7 +122,7 @@ Provide your judgment with:
       category,
       status: parsed.status,
       requirement: parsed.requirement,
-      evidence: parsed.evidence,
+      evidence: parsed.evidence ?? undefined,
       explanation: parsed.explanation,
       sources,
     }

@@ -14,19 +14,26 @@ import {
  * Evidence extracted for a single compliance category.
  */
 const CategoryEvidenceSchema = z.object({
+  category: ComplianceCategorySchema.describe('The compliance category this evidence relates to'),
   present: z.boolean().describe('Whether evidence for this category was found in the note'),
   evidence: z.array(z.string()).describe('Relevant quotes or paraphrased evidence from the note'),
 })
 
 /**
  * Schema for extracted claims across all requested categories.
+ * Uses array format for OpenAI structured output compatibility.
  */
-const ExtractedClaimsSchema = z.object({
-  claims: z.record(ComplianceCategorySchema, CategoryEvidenceSchema),
+const ExtractedClaimsArraySchema = z.object({
+  claims: z.array(CategoryEvidenceSchema).describe('Evidence found for each compliance category'),
 })
 
-export type ExtractedClaims = z.infer<typeof ExtractedClaimsSchema>
-export type CategoryEvidence = z.infer<typeof CategoryEvidenceSchema>
+/**
+ * Internal representation with record structure for easier lookup.
+ */
+export type ExtractedClaims = {
+  claims: Record<ComplianceCategory, CategoryEvidence>
+}
+export type CategoryEvidence = { present: boolean; evidence: string[] }
 
 /**
  * System prompt for claims extraction.
@@ -74,7 +81,7 @@ For each category, indicate whether evidence is present and list the specific ev
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt },
       ],
-      response_format: zodResponseFormat(ExtractedClaimsSchema, 'extracted_claims'),
+      response_format: zodResponseFormat(ExtractedClaimsArraySchema, 'extracted_claims'),
     })
 
     const parsed = response.choices[0].message.parsed
@@ -83,7 +90,16 @@ For each category, indicate whether evidence is present and list the specific ev
       throw new Error('Failed to parse structured response from OpenAI')
     }
 
-    return { claims: parsed }
+    // Convert array format to record format for easier lookup
+    const claimsRecord: Record<ComplianceCategory, CategoryEvidence> = {} as Record<ComplianceCategory, CategoryEvidence>
+    for (const claim of parsed.claims) {
+      claimsRecord[claim.category] = {
+        present: claim.present,
+        evidence: claim.evidence,
+      }
+    }
+
+    return { claims: { claims: claimsRecord } }
   } catch (error) {
     // Handle length finish reason - return partial with warning
     if (error instanceof LengthFinishReasonError) {
