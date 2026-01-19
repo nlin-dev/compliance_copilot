@@ -71,7 +71,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/6 | In progress | - |
+| 1. Foundation | 4/6 | In progress | - |
 | 2. Ingestion | 0/TBD | Not started | - |
 | 3. Query API | 0/TBD | Not started | - |
 | 4. Compliance API | 0/TBD | Not started | - |
