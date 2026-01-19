@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+
+  // Request info
+  endpoint  String   // e.g., "/api/query", "/api/compliance"
+  method    String   // e.g., "POST"
+
+  // User identification (IP-based for now, no auth)
+  clientIp  String?
+  userAgent String?
+
+  // Request/Response
+  requestBody  Json?    // Sanitized request (no sensitive data)
+  responseCode Int
+  responseTime Int      // milliseconds
+
+  // Query-specific fields
+  queryText    String?  // The user's question (for /api/query)
+  chunksUsed   Int?     // Number of chunks retrieved
+
+  // Compliance-specific fields
+  noteLength   Int?     // Length of visit note (for /api/compliance)
+  findingsCount Int?    // Number of compliance findings
+
+  // Error tracking
+  errorMessage String?
+
+  @@index([timestamp])
+  @@index([endpoint])
+  @@index([clientIp])
+}
