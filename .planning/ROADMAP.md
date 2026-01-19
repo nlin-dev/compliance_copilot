@@ -75,5 +75,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Ingestion | 3/3 | Complete | 2026-01-19 |
 | 3. Query API | 2/2 | Complete | 2026-01-19 |
 | 4. Compliance API | 2/2 | Complete | 2026-01-19 |
-| 5. Frontend | 1/3 | In progress | - |
+| 5. Frontend | 2/3 | In progress | - |
 | 6. Polish | 0/TBD | Not started | - |
