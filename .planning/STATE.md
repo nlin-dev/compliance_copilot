@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-19)
 ## Current Position
 
 Phase: 6 of 6 (Polish)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-19 — Completed 06-01-PLAN.md
+Last activity: 2026-01-19 — Completed 06-02-PLAN.md
 
-Progress: ████████████████░ ~94%
+Progress: █████████████████░ ~97%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: 3.2 min
-- Total execution time: 54.5 min
+- Total execution time: 57.5 min
 
 **By Phase:**
 
@@ -32,10 +32,10 @@ Progress: ████████████████░ ~94%
 | 3-Query API | 2/2 | 8 min | 4 min |
 | 4-Compliance API | 2/2 | 8 min | 4 min |
 | 5-Frontend | 3/3 | 10 min | 3 min |
-| 6-Polish | 1/3 | 6 min | 6 min |
+| 6-Polish | 2/3 | 9 min | 4.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (5 min), 05-01 (3 min), 05-02 (4 min), 05-03 (3 min), 06-01 (6 min)
+- Last 5 plans: 05-01 (3 min), 05-02 (4 min), 05-03 (3 min), 06-01 (6 min), 06-02 (3 min)
 - Trend: —
 
 ## Accumulated Context
@@ -61,6 +61,7 @@ Recent decisions affecting current work:
 - 05-02: __SOURCES__ delimiter in stream, fail silently on invalid JSON sources
 - 05-03: Sample notes from existing JSON, skeleton mirrors FindingsDisplay structure
 - 06-01: Message skeleton mimics chat bubble layout, compliance page refactored to server component for metadata export
+- 06-02: README with 11 sections for practical onboarding, Vercel config with iad1 region, 10s maxDuration for Hobby tier
 
 ### Deferred Issues
 
@@ -73,5 +74,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 06-01-PLAN.md
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None
