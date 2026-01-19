@@ -140,6 +140,7 @@ credentials/
 # LOCAL DATA & TEMP FILES
 # ============================================================================
 data/
+!data/sample-visit-notes.json
 tmp/
 temp/
 *.tmp

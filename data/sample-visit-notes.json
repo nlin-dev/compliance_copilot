@@ -1,0 +1,37 @@
+[
+  {
+    "id": "passing-note",
+    "name": "Complete Compliant Note",
+    "description": "All categories should PASS",
+    "expectedStatus": "PASS",
+    "visitNote": "HOME HEALTH VISIT NOTE\n\nDate of Visit: January 15, 2026\nPatient: John Smith, DOB: 03/15/1945\nVisit Type: Skilled Nursing Visit\n\nHOMEBOUND STATUS:\nPatient is homebound due to severe mobility limitations secondary to bilateral knee osteoarthritis and chronic heart failure (NYHA Class III). Patient requires a walker and one-person assist to ambulate within the home. Leaving home requires considerable and taxing effort. Patient can only leave home for medical appointments and requires wheelchair transport. Patient becomes short of breath with minimal exertion and fatigues easily. Physician has documented homebound status and ordered home health services.\n\nSKILLED NURSING SERVICES PROVIDED:\n1. Wound care to left lower extremity venous stasis ulcer (3cm x 2cm x 0.5cm). Applied compression dressing per physician order. Wound shows signs of healing with decreased drainage.\n2. Medication management and education for newly prescribed anticoagulant therapy. Patient instructed on signs/symptoms of bleeding to report.\n3. Assessment of cardiovascular status including vital signs, lung sounds, and peripheral edema monitoring.\n4. Blood glucose monitoring and diabetes management education.\n\nPLAN OF CARE:\nContinuing per physician orders dated January 10, 2026. Plan of care reviewed and signed by Dr. Johnson (NPI: 1234567890). Goals include wound healing, medication compliance, and disease management. Anticipated duration of services: 60 days with re-evaluation at 30 days.\n\nFACE-TO-FACE ENCOUNTER:\nPatient had face-to-face encounter with Dr. Johnson on January 8, 2026, who certified the need for home health services. Documentation of encounter on file. Physician certification statement completed and signed.\n\nASSESSMENT:\nPatient tolerating care well. Vital signs stable: BP 128/78, HR 72, RR 18, O2 sat 96% on room air. Wound improving. Patient demonstrates understanding of medication regimen.\n\nNEXT VISIT: January 18, 2026\n\nNurse Signature: Jane Doe, RN\nTime in: 10:00 AM | Time out: 11:15 AM"
+  },
+  {
+    "id": "missing-homebound",
+    "name": "Missing Homebound Documentation",
+    "description": "homebound_status should FAIL - no documentation of homebound criteria",
+    "expectedStatus": "FAIL",
+    "visitNote": "HOME HEALTH VISIT NOTE\n\nDate of Visit: January 15, 2026\nPatient: Mary Johnson, DOB: 07/22/1950\nVisit Type: Skilled Nursing Visit\n\nSKILLED NURSING SERVICES PROVIDED:\n1. Wound care to right heel pressure ulcer. Applied hydrocolloid dressing per order. Wound measured at 2cm x 2cm x 0.3cm with healthy granulation tissue.\n2. Medication reconciliation completed. Patient taking all medications as prescribed.\n3. Vital signs monitored: BP 134/82, HR 76, RR 16, O2 sat 97%.\n\nPLAN OF CARE:\nContinuing per physician orders. Plan of care includes wound care three times weekly and medication management. Goals are wound closure and medication compliance.\n\nFACE-TO-FACE ENCOUNTER:\nPhysician face-to-face encounter completed January 5, 2026 with Dr. Williams. Certification documentation on file.\n\nASSESSMENT:\nPatient doing well. Wound showing improvement. Caregiver present and engaged in care plan.\n\nPATIENT EDUCATION:\nReinforced importance of pressure relief and proper nutrition for wound healing. Caregiver verbalized understanding.\n\nNEXT VISIT: January 18, 2026\n\nNurse Signature: Robert Smith, RN\nTime in: 2:00 PM | Time out: 2:45 PM"
+  },
+  {
+    "id": "missing-skilled",
+    "name": "Missing Skilled Nursing Justification",
+    "description": "skilled_nursing_need should FAIL - no skilled services documented",
+    "expectedStatus": "FAIL",
+    "visitNote": "HOME HEALTH VISIT NOTE\n\nDate of Visit: January 15, 2026\nPatient: Robert Williams, DOB: 11/30/1948\nVisit Type: Nursing Visit\n\nHOMEBOUND STATUS:\nPatient is homebound due to severe COPD requiring supplemental oxygen 24/7. Patient cannot leave home without considerable effort and assistance. Uses wheelchair for any distance. Leaving home causes significant shortness of breath and fatigue. Patient only leaves for essential medical appointments.\n\nSERVICES PROVIDED:\nGeneral assessment visit. Checked on patient comfort level. Patient reports feeling okay today. Assisted patient with activities of daily living. Reminded patient to take medications. Observed patient environment for safety hazards.\n\nPLAN OF CARE:\nPer physician orders. Patient to continue current regimen.\n\nFACE-TO-FACE:\nPhysician encounter January 3, 2026. Home health ordered.\n\nVITAL SIGNS:\nBP 140/88, HR 82, RR 20, Temp 98.4F, O2 sat 92% on 2L NC\n\nPATIENT CONDITION:\nStable. No acute distress. Patient comfortable at this time.\n\nNEXT VISIT: January 18, 2026\n\nNurse Signature: Sarah Brown, RN\nTime in: 9:30 AM | Time out: 10:00 AM"
+  },
+  {
+    "id": "ambiguous-note",
+    "name": "Vague Documentation",
+    "description": "Should trigger NEEDS_REVIEW on multiple categories - vague documentation throughout",
+    "expectedStatus": "NEEDS_REVIEW",
+    "visitNote": "HOME HEALTH VISIT NOTE\n\nDate: January 15, 2026\nPatient: Patricia Davis\nVisit Type: Skilled Nursing\n\nPatient seen today for routine visit. Patient has difficulty getting around but manages okay with help from family. Patient is on several medications and seems to be doing alright with them.\n\nProvided nursing care as ordered. Checked vital signs which were acceptable. Patient has some health issues being monitored. Educated patient on general health topics.\n\nDoctor is aware of patient status. Orders being followed. Will continue visits as planned.\n\nPatient appears stable. Family reports no major concerns at this time. Patient tolerating care.\n\nSome wound care provided. Area looks improved from last visit. Will continue to monitor.\n\nPlan of care in place per physician. Services to continue as outlined.\n\nNext visit scheduled.\n\nNurse: J. Miller, RN"
+  },
+  {
+    "id": "minimal-passing",
+    "name": "Minimal Compliant Documentation",
+    "description": "All elements present but brief - should PASS with marginal evidence",
+    "expectedStatus": "PASS",
+    "visitNote": "HOME HEALTH SKILLED NURSING VISIT\n\nDate: January 15, 2026\nPatient: Thomas Anderson, DOB: 05/08/1942\n\nHOMEBOUND STATUS: Patient homebound due to weakness from recent hospitalization for pneumonia. Requires walker and assist x1 for ambulation. Leaving home is taxing. MD certified homebound.\n\nSKILLED NURSING: Performed IV antibiotic administration (Ceftriaxone 1g IV daily per order). Assessed PICC line site - no signs of infection. Monitored for adverse reactions. Skilled assessment of respiratory status - lungs clear bilaterally, no distress.\n\nVITALS: BP 126/74, HR 68, RR 16, Temp 98.2F, O2 sat 95% RA.\n\nPLAN OF CARE: Per Dr. Chen orders dated January 12, 2026. IV antibiotics x7 days, skilled nursing 5x/week. Goals: Complete antibiotic course, monitor for complications.\n\nFACE-TO-FACE: Dr. Chen F2F encounter January 12, 2026. Certification completed. Home health medically necessary.\n\nASSESSMENT: Patient improving. Tolerating antibiotics. Continue plan.\n\nNext visit: January 16, 2026\n\nM. Garcia, RN\nTime: 11:00 AM - 11:35 AM"
+  }
+]
